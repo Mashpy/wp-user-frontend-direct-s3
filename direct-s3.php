@@ -101,6 +101,10 @@ function direct_s3_upload_scripts(){
     ?>
 
     <script>
+        if ( jQuery(".remove-direct-upload").length ){
+            jQuery('.download-file-div').hide();
+        }
+
         jQuery('.count-progress-bar').hide();
         jQuery('#download_files').val('');
         jQuery('#download_files').change(function(e){
@@ -146,7 +150,7 @@ function direct_s3_upload_scripts(){
                         jQuery('.count-progress-bar').hide();
                         jQuery('.upload-success').text(' Uploaded successfully.');
                         jQuery('.download-file-div').hide('slow');
-                        jQuery('.upload-success').after('<li> * ' + filename + '<a href="#" class="remove-direct-upload" data-key-path="'+ key_path +'" data-media="'+ media_post_id +'"> remove</a></li>');
+                        jQuery('.upload-success').after('<div> * ' + filename + '<a href="#" class="remove-direct-upload" data-key-path="'+ key_path +'" data-media="'+ media_post_id +'"> remove</a></div>');
 
                     });
                 },
@@ -162,30 +166,31 @@ function direct_s3_upload_scripts(){
                     return xhr;
                 }
             });
+        });
 
-            jQuery(document).on("click",".remove-direct-upload",function(e) {
-                e.preventDefault();
-                var media_post_id = jQuery(this).data('media');
-                var key_path = jQuery(this).data('key-path');
-                var remove_direct_upload_li = this;
+        jQuery(document).on("click",".remove-direct-upload",function(e) {
+            e.preventDefault();
+            var media_post_id = jQuery(this).data('media');
+            var key_path = jQuery(this).data('key-path');
+            var remove_direct_upload_li = this;
 
-                var media_data = {
-                    action: 'delete_file_s3',
-                    key_path: key_path,
-                    media_post_id: media_post_id
-                };
+            var media_data = {
+                action: 'delete_file_s3',
+                key_path: key_path,
+                media_post_id: media_post_id
+            };
 
-                jQuery('.upload-success').text('Deleting...').css("color","red");
+            jQuery('.upload-success').text('Deleting...').css("color","red");
 
-                jQuery.post(ajaxurl, media_data, function() {
-                    jQuery('#wpuf_files_input_' + media_post_id).remove();
-                    jQuery(remove_direct_upload_li).parent('li').remove();
-                    jQuery('.download-file-div').show('slow');
-                    jQuery('.upload-success').text('Deleted. Upload New file.').css("color","inherit");
-                });
+            jQuery.post(ajaxurl, media_data, function() {
+                jQuery('#wpuf_files_input_' + media_post_id).remove();
+                jQuery(remove_direct_upload_li).parent('div').remove();
+                jQuery('.download-file-div').show('slow');
+                jQuery('.upload-success').text('Deleted. Upload New file.').css("color","inherit");
             });
         });
     </script>
+
 <?php }
 
 
