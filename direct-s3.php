@@ -13,7 +13,7 @@ add_action('wp_ajax_after_direct_s3_upload', 'after_direct_s3_upload' );
 add_action('wp_ajax_nopriv_after_direct_s3_upload', 'after_direct_s3_upload' );
 
 function after_direct_s3_upload(){
-    $amazon_url = $_POST['amazon_url'];
+    $amazon_url = urldecode($_POST['amazon_url']);
     $filename = $_POST['filename'];
     global $user_ID;
     $new_post = array(
@@ -28,6 +28,7 @@ function after_direct_s3_upload(){
     global $wpdb;
     $wp_prefix = $wpdb->prefix . 'posts';
     $wpdb->get_results("UPDATE $wp_prefix SET guid ='". $amazon_url."' WHERE ID = $post_id");
+    
     echo json_encode($post_id);
     die();
 }
@@ -140,6 +141,7 @@ function direct_s3_upload_scripts(){
                         filename: filename
                     };
                     jQuery.post(ajaxurl, media_data, function(media_post_id) {
+                    	var media_post_id = jQuery.trim(media_post_id);
                         jQuery('<input>', {
                             type: 'hidden',
                             name: 'wpuf_files[_woo_files][]',
